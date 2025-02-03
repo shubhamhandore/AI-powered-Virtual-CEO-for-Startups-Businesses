@@ -2,8 +2,11 @@ name: Daily Progress Report
 
 on:
   schedule:
-    - cron: '30 17 * * *'  # India time 11:00 PM (GitHub UTC me chalta hai)
-  workflow_dispatch:  # Manual trigger ke liye
+    - cron: '30 17 * * *'  # Runs at 11:00 PM IST (UTC me 5:30 PM)
+  workflow_dispatch:  # Manually run karne ka option
+
+permissions:
+  contents: write  # Push permissions enable kar raha hai
 
 jobs:
   update-progress:
@@ -18,7 +21,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-      - name: Check if progress_report.md Exists
+      - name: Check & Create Progress Report File
         run: |
           if [ ! -f progress_report.md ]; then
             echo "Creating progress_report.md"
@@ -28,14 +31,16 @@ jobs:
       - name: Update Progress Report
         run: |
           echo "### $(date +"%Y-%m-%d") Progress Report 🚀" >> progress_report.md
-          echo "- **Work Done:** ✅ Add your daily work updates here" >> progress_report.md
-          echo "- **Challenges:** ⚠️ Mention any issues faced" >> progress_report.md
-          echo "- **Next Steps:** ⏩ What's planned for tomorrow?" >> progress_report.md
+          echo "- **Work Done:** ✅ Added new AI module" >> progress_report.md
+          echo "- **Challenges:** ⚠️ Fixed API rate limit issue" >> progress_report.md
+          echo "- **Next Steps:** ⏩ Implement new ML model" >> progress_report.md
           echo "" >> progress_report.md
 
       - name: Commit and Push Changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git add progress_report.md
           git commit -m "📌 Daily Progress Report - $(date +"%Y-%m-%d")" || echo "No changes to commit"
-          git push || echo "No changes to push"
-
+          git push origin main || echo "No changes to push"
+s
