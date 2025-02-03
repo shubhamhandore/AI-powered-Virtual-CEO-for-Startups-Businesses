@@ -2,8 +2,8 @@ name: Daily Progress Report
 
 on:
   schedule:
-    - cron: '30 17 * * *'
-  workflow_dispatch:
+    - cron: '30 17 * * *'  # India time 11:00 PM (GitHub UTC me chalta hai)
+  workflow_dispatch:  # Manual trigger ke liye
 
 jobs:
   update-progress:
@@ -12,6 +12,18 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Check if progress_report.md Exists
+        run: |
+          if [ ! -f progress_report.md ]; then
+            echo "Creating progress_report.md"
+            echo "# Progress Report 📊" > progress_report.md
+          fi
 
       - name: Update Progress Report
         run: |
@@ -23,8 +35,7 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
           git add progress_report.md
-          git commit -m "📌 Daily Progress Report - $(date +"%Y-%m-%d")"
-          git push
+          git commit -m "📌 Daily Progress Report - $(date +"%Y-%m-%d")" || echo "No changes to commit"
+          git push || echo "No changes to push"
+
