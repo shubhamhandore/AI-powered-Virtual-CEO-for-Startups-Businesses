@@ -1,0 +1,30 @@
+name: Daily Progress Report
+
+on:
+  schedule:
+    - cron: '30 17 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-progress:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Update Progress Report
+        run: |
+          echo "### $(date +"%Y-%m-%d") Progress Report 🚀" >> progress_report.md
+          echo "- **Work Done:** ✅ Add your daily work updates here" >> progress_report.md
+          echo "- **Challenges:** ⚠️ Mention any issues faced" >> progress_report.md
+          echo "- **Next Steps:** ⏩ What's planned for tomorrow?" >> progress_report.md
+          echo "" >> progress_report.md
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add progress_report.md
+          git commit -m "📌 Daily Progress Report - $(date +"%Y-%m-%d")"
+          git push
